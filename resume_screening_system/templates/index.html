@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% block title %}Upload Resume{% endblock %}
+{% block content %}
+<style>
+  body {
+    background: linear-gradient(-45deg, #d0f4de, #a9def9, #e4c1f9, #f694c1);
+    background-size: 400% 400%;
+    animation: gradientBG 10s ease infinite;
+  }
+
+  @keyframes gradientBG {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+
+  .upload-page-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 80vh;
+  }
+
+  .upload-card {
+    background-color: #ffffffcc;
+    padding: 2.5rem;
+    border-radius: 1rem;
+    box-shadow: 0 10px 20px rgba(0,0,0,0.08);
+    backdrop-filter: blur(6px);
+    animation: fadeInUp 0.8s ease;
+    max-width: 600px;
+    width: 100%;
+    text-align: left;
+  }
+
+  @keyframes fadeInUp {
+    0% { opacity: 0; transform: translateY(30px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+
+  .btn-upload {
+    background-color: #0096c7;
+    color: white;
+    font-weight: bold;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  .btn-upload:hover {
+    background-color: #0077b6;
+    transform: scale(1.02);
+  }
+
+  .link-resumes {
+    margin-top: 1rem;
+    display: inline-block;
+    font-size: 0.95rem;
+    text-decoration: none;
+    color: #003049;
+    font-weight: 500;
+  }
+
+  .link-resumes:hover {
+    text-decoration: underline;
+  }
+</style>
+
+<div class="upload-page-container">
+  <div class="upload-card">
+    <h3 class="text-dark mb-4">📤 Upload Your Resume (PDF)</h3>
+    <form action="/upload" method="post" enctype="multipart/form-data">
+      <div class="mb-3">
+        <input type="file" name="file" class="form-control" accept=".pdf" required>
+      </div>
+      <button type="submit" class="btn btn-upload w-100">Upload Resume</button>
+    </form>
+    <a href="/resumes" class="link-resumes">📁 View All Uploaded Resumes</a>
+  </div>
+</div>
+<ul id="resumeList"></ul>
+<script>
+    function loadResumes() {
+        fetch('/filter')
+            .then(response => response.json())
+            .then(data => {
+                const resumeList = document.getElementById('resumeList');
+                resumeList.innerHTML = '';
+                data.filtered_resumes.forEach(resume => {
+                    const li = document.createElement('li');
+                    li.textContent = `${resume.filename} - Skills: ${resume.skills.join(', ')} - Score: ${resume.score}`;
+                    resumeList.appendChild(li);
+                });
+            });
+    }
+    loadResumes();
+</script>
+
+{% endblock %}
